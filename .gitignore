@@ -1,0 +1,30 @@
+# Environment
+.env
+.env.*
+
+# ASP.NET Core
+ShebsonVPN.API/bin/
+ShebsonVPN.API/obj/
+*.user
+*.suo
+.vs/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Certbot / SSL
+certbot/conf/
+certbot/www/
+
+# Logs
+*.log
+
+# IDE / AI tools
+.agents/
+.artifacts/
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
