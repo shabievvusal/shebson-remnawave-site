@@ -1,30 +1,30 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: nexus_db
+    container_name: shebson_db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${DB_USER:-nexus}
+      POSTGRES_USER: ${DB_USER:-shebson}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME:-shebson_vpn}
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-nexus} -d ${DB_NAME:-shebson_vpn}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-shebson} -d ${DB_NAME:-shebson_vpn}"]
       interval: 5s
       timeout: 5s
       retries: 10
     networks:
-      - nexus
+      - shebson
 
   api:
     build:
       context: ./ShebsonVPN.API
       dockerfile: Dockerfile
-    container_name: nexus_api
+    container_name: shebson_api
     restart: unless-stopped
     environment:
-      ConnectionStrings__Default: "Host=db;Port=5432;Database=${DB_NAME:-shebson_vpn};Username=${DB_USER:-nexus};Password=${DB_PASSWORD}"
+      ConnectionStrings__Default: "Host=db;Port=5432;Database=${DB_NAME:-shebson_vpn};Username=${DB_USER:-shebson};Password=${DB_PASSWORD}"
       Jwt__Secret: ${JWT_SECRET}
       Jwt__Issuer: shebson-vpn
       Jwt__Audience: shebson-vpn-users
@@ -48,13 +48,13 @@ services:
       db:
         condition: service_healthy
     networks:
-      - nexus
+      - shebson
 
   nginx:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: nexus_nginx
+    container_name: shebson_nginx
     restart: unless-stopped
     ports:
       - "80:80"
@@ -66,22 +66,22 @@ services:
     depends_on:
       - api
     networks:
-      - nexus
+      - shebson
 
   certbot:
     image: certbot/certbot
-    container_name: nexus_certbot
+    container_name: shebson_certbot
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
     entrypoint: >
       /bin/sh -c "certbot certonly --webroot -w /var/www/certbot
       --email shrekson8@gmail.com -d my.shebsonremna.spb.ru
-      --agree-tos --non-interactive --force-renewal"
+      --agree-tos --non-interactive"
 
 volumes:
   db_data:
 
 networks:
-  nexus:
+  shebson:
     driver: bridge

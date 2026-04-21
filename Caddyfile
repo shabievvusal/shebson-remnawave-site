@@ -1,0 +1,11 @@
+my.shebsonremna.spb.ru {
+    handle /api/* {
+        reverse_proxy api:5000
+    }
+
+    handle {
+        root * /srv
+        file_server
+        try_files {path} /index.html
+    }
+}
