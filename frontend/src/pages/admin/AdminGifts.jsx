@@ -13,7 +13,7 @@ export default function AdminGifts() {
   useEffect(() => { getGiftCodes(page).then(setData).catch(() => {}) }, [page])
 
   return (
-    <div>
+    <div style={{ padding: "32px" }}>
       <h1 className="font-display" style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: 24, color: 'var(--text-primary)' }}>Подарочные коды</h1>
 
       {!data ? <div style={{ color: 'var(--text-muted)' }}>Загрузка…</div> : (

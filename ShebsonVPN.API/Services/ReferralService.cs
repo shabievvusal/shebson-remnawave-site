@@ -31,8 +31,9 @@ public class ReferralService(AppDbContext db, RemnawaveService remna)
 
         if (referrerSub is null) return;
 
-        const int bonusDays = 7;
-        await remna.RenewUserAsync(referrerSub.RemnaUuid, bonusDays);
+        const int bonusDays = 30;
+        const long bonusTrafficBytes = 150L * 1024 * 1024 * 1024;
+        await remna.RenewUserAsync(referrerSub.RemnaUuid, bonusDays, bonusTrafficBytes);
         referrerSub.ExpiresAt = referrerSub.ExpiresAt > DateTime.UtcNow
             ? referrerSub.ExpiresAt.AddDays(bonusDays)
             : DateTime.UtcNow.AddDays(bonusDays);
@@ -41,7 +42,8 @@ public class ReferralService(AppDbContext db, RemnawaveService remna)
         {
             ReferrerId = referrerId,
             ReferralUserId = referralUserId,
-            BonusDays = bonusDays
+            BonusDays = bonusDays,
+            BonusTrafficBytes = bonusTrafficBytes
         });
 
         await db.SaveChangesAsync();

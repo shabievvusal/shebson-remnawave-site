@@ -86,7 +86,7 @@ public class RemnawaveService(IConfiguration config, IHttpClientFactory http)
     public async Task<long> GetUsedTrafficAsync(string uuid) =>
         (await GetUserInfoAsync(uuid)).UsedBytes;
 
-    public async Task RenewUserAsync(string uuid, int days)
+    public async Task RenewUserAsync(string uuid, int days, long bonusTrafficBytes = 0)
     {
         var client = CreateClient();
         var resp = await client.GetAsync($"api/users/{uuid}");
@@ -103,12 +103,14 @@ public class RemnawaveService(IConfiguration config, IHttpClientFactory http)
             .Select(s => s.TryGetProperty("uuid", out var id) ? id.GetString() : s.GetString())
             .ToArray();
 
+        var currentTraffic = user.GetProperty("trafficLimitBytes").GetInt64();
+
         var payload = new
         {
             uuid,
             expireAt = newExpire.ToString("o"),
             status = "ACTIVE",
-            trafficLimitBytes = user.GetProperty("trafficLimitBytes").GetInt64(),
+            trafficLimitBytes = currentTraffic + bonusTrafficBytes,
             trafficLimitStrategy = user.GetProperty("trafficLimitStrategy").GetString(),
             hwidDeviceLimit = user.GetProperty("hwidDeviceLimit").GetInt32(),
             telegramId = user.TryGetProperty("telegramId", out var tid) ? (long?)tid.GetInt64() : null,

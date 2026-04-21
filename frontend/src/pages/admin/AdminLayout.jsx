@@ -6,6 +6,7 @@ const nav = [
   { to: '/admin', label: 'Статистика', icon: '📊' },
   { to: '/admin/users', label: 'Пользователи', icon: '👥' },
   { to: '/admin/payments', label: 'Платежи', icon: '💳' },
+  { to: '/admin/tickets', label: 'Тикеты', icon: '💬' },
   { to: '/admin/promo', label: 'Промокоды', icon: '🏷️' },
   { to: '/admin/gifts', label: 'Подарки', icon: '🎁' },
 ]
@@ -68,7 +69,7 @@ export default function AdminLayout() {
       </aside>
 
       {/* Content */}
-      <main style={{ flex: 1, overflow: 'auto', padding: '32px' }}>
+      <main style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         <Outlet />
       </main>
     </div>

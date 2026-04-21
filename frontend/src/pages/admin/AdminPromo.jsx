@@ -35,7 +35,7 @@ export default function AdminPromo() {
   }
 
   return (
-    <div>
+    <div style={{ padding: "32px" }}>
       <h1 className="font-display" style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: 24, color: 'var(--text-primary)' }}>Промокоды</h1>
 
       {/* Create form */}

@@ -266,7 +266,7 @@ export default function Dashboard() {
             <div>
               <div className="font-display" style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }}>Реферальная программа</div>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', margin: 0 }}>
-                За каждого оплатившего друга — +7 дней к подписке
+                За каждого оплатившего друга — +30 дней к подписке
               </p>
             </div>
           </div>

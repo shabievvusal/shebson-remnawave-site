@@ -18,6 +18,7 @@ import AdminUsers from './pages/admin/AdminUsers'
 import AdminPayments from './pages/admin/AdminPayments'
 import AdminPromo from './pages/admin/AdminPromo'
 import AdminGifts from './pages/admin/AdminGifts'
+import AdminTickets from './pages/admin/AdminTickets'
 
 export default function App() {
   return (
@@ -43,6 +44,7 @@ export default function App() {
             <Route path="payments" element={<AdminPayments />} />
             <Route path="promo" element={<AdminPromo />} />
             <Route path="gifts" element={<AdminGifts />} />
+            <Route path="tickets" element={<AdminTickets />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />

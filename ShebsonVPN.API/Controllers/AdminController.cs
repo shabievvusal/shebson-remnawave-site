@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShebsonVPN.API.Data;
+using ShebsonVPN.API.DTOs;
 using ShebsonVPN.API.Models;
 
 namespace ShebsonVPN.API.Controllers;
@@ -167,6 +168,76 @@ public class AdminController(AppDbContext db) : ControllerBase
             .ToListAsync();
 
         return Ok(new { total, page, pageSize, payments });
+    }
+
+    // ── Tickets ───────────────────────────────────────────────────────────────
+
+    [HttpGet("tickets")]
+    public async Task<IActionResult> GetTickets([FromQuery] string? status, [FromQuery] int page = 1, [FromQuery] int pageSize = 30)
+    {
+        var query = db.Tickets.Include(t => t.User).AsQueryable();
+        if (!string.IsNullOrEmpty(status) && Enum.TryParse<TicketStatus>(status, out var s))
+            query = query.Where(t => t.Status == s);
+
+        var total = await query.CountAsync();
+        var tickets = await query
+            .OrderByDescending(t => t.UpdatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(t => new
+            {
+                t.Id, t.Subject, status = t.Status.ToString(),
+                t.CreatedAt, t.UpdatedAt,
+                userEmail = t.User.Email, userId = t.UserId,
+                messageCount = t.Messages.Count
+            })
+            .ToListAsync();
+
+        return Ok(new { total, page, pageSize, tickets });
+    }
+
+    [HttpGet("tickets/{id}")]
+    public async Task<IActionResult> GetTicket(int id)
+    {
+        var ticket = await db.Tickets
+            .Include(t => t.User)
+            .Include(t => t.Messages)
+            .FirstOrDefaultAsync(t => t.Id == id);
+        if (ticket is null) return NotFound();
+
+        return Ok(new
+        {
+            ticket.Id, ticket.Subject, status = ticket.Status.ToString(),
+            ticket.CreatedAt, ticket.UpdatedAt,
+            userEmail = ticket.User.Email, userId = ticket.UserId,
+            messages = ticket.Messages.OrderBy(m => m.CreatedAt)
+                .Select(m => new { m.Id, m.Body, m.IsFromSupport, m.CreatedAt })
+        });
+    }
+
+    [HttpPost("tickets/{id}/reply")]
+    public async Task<IActionResult> ReplyTicket(int id, [FromBody] ReplyTicketRequest req)
+    {
+        var ticket = await db.Tickets.FirstOrDefaultAsync(t => t.Id == id);
+        if (ticket is null) return NotFound();
+        if (ticket.Status == TicketStatus.Closed) return BadRequest(new { error = "Тикет закрыт" });
+
+        db.TicketMessages.Add(new TicketMessage { TicketId = id, Body = req.Message, IsFromSupport = true });
+        ticket.UpdatedAt = DateTime.UtcNow;
+        ticket.Status = TicketStatus.InProgress;
+        await db.SaveChangesAsync();
+        return Ok();
+    }
+
+    [HttpPost("tickets/{id}/close")]
+    public async Task<IActionResult> CloseTicket(int id)
+    {
+        var ticket = await db.Tickets.FirstOrDefaultAsync(t => t.Id == id);
+        if (ticket is null) return NotFound();
+        ticket.Status = TicketStatus.Closed;
+        ticket.UpdatedAt = DateTime.UtcNow;
+        await db.SaveChangesAsync();
+        return Ok();
     }
 
     // ── Gift Codes ────────────────────────────────────────────────────────────

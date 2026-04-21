@@ -19,7 +19,7 @@ export default function AdminStats() {
   if (!stats) return <div style={{ color: 'var(--text-muted)' }}>Загрузка…</div>
 
   return (
-    <div>
+    <div style={{ padding: "32px" }}>
       <h1 className="font-display" style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: 24, color: 'var(--text-primary)' }}>Статистика</h1>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 14 }}>
