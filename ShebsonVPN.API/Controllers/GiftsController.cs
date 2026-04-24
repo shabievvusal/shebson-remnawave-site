@@ -17,13 +17,13 @@ public class GiftsController(AppDbContext db, YookassaService yoo, RemnawaveServ
     private static readonly Dictionary<string, (int Days, long Traffic, int Devices)> PlanMeta = new()
     {
         ["month_1"]  = (30,  150L * 1024 * 1024 * 1024, 3),
-        ["month_3"]  = (90,  300L * 1024 * 1024 * 1024, 5),
+        ["month_3"]  = (90,  500L * 1024 * 1024 * 1024, 5),
         ["month_12"] = (365, 1000L * 1024 * 1024 * 1024, 10),
     };
 
     private static readonly Dictionary<string, decimal> PlanPrices = new()
     {
-        ["month_1"] = 150, ["month_3"] = 399, ["month_12"] = 1499,
+        ["month_1"] = 150, ["month_3"] = 450, ["month_12"] = 1499,
     };
 
     [HttpPost("buy")]

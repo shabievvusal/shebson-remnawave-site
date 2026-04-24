@@ -71,6 +71,8 @@ services:
   certbot:
     image: certbot/certbot
     container_name: shebson_certbot
+    profiles:
+      - certbot
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
